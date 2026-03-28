@@ -217,7 +217,9 @@ jobs:
           zip -r KPM_SUSFS_ReSuKiSu_${{ env.KSUVER }}_oneplus_ace5_pro.zip *
 
       - name: Upload AnyKernel3
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
+          name: KPM_SUSFS_ReSuKiSu_${{ env.KSUVER }}_oneplus_ace5_pro.zip
           path: ./AnyKernel3/KPM_SUSFS_ReSuKiSu_${{ env.KSUVER }}_oneplus_ace5_pro.zip
+          archive: false
 
