@@ -27,7 +27,7 @@ jobs:
       - name: Setup packages
         run: |
           sudo apt update
-          sudo apt install -y bison bc
+          sudo apt install -y libssl-dev libelf-dev
 
       - name: Setup Kernel Src
         run: |
