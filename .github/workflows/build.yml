@@ -1,4 +1,4 @@
-name: oneplus_ace5_pro
+name: build
 on:
   workflow_dispatch:
     inputs:
@@ -52,26 +52,11 @@ jobs:
           
       - name: Apply patches
         run: |
-          cd kernel_workspace
-          git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6 --depth=1
+          cd kernel_workspace/kernel_platform/common
+          
+          wget https://github.com/ReSukiSU/ReSukiSU_Patches/raw/refs/heads/main/scope-minimized/kernel-gki-android15-6.6.patch
 
-          cd kernel_platform        
-          cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch ./common/
-          cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
-          cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-          # Apply patches
-          cd ./common
-
-          patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch || true
-
-          FILE=./fs/proc/base.c
-          if ! grep -q susfs_def.h "$FILE"; then
-            sed -i '/#include <linux\/cpufreq_times.h>/a\
-          #if defined(CONFIG_KSU_SUSFS_SUS_MAP) && defined(CONFIG_KSU_SUSFS_OPEN_REDIRECT)\
-          #include <linux/susfs_def.h>\
-          #endif
-          ' "$FILE"
-          fi
+          patch -p1 < kernel-gki-android15-6.6.patch || true
 
           echo "完成"
 
@@ -165,10 +150,11 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform
           echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/gki_defconfig
+          echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KPM=y" >> ./common/arch/arm64/configs/gki_defconfig
-          
-          # Add SUSFS configuration settings
-          echo "CONFIG_KSU_SUSFS=y" >> ./common/arch/arm64/configs/gki_defconfig
+          echo "CONFIG_KSU_MANUAL_HOOK_AUTO_INPUT_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
+          echo "CONFIG_KSU_MANUAL_HOOK_AUTO_SETUID_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
+          echo "CONFIG_KSU_MANUAL_HOOK_AUTO_INITRC_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
           # mountify
           echo "CONFIG_TMPFS_XATTR=y" >> ./common/arch/arm64/configs/gki_defconfig
           # Remove check_defconfig
@@ -215,10 +201,6 @@ jobs:
           cp kernel_workspace/kernel_platform/common/out/arch/arm64/boot/Image ./AnyKernel3/
           cd ./AnyKernel3
           zip -r KPM_ReSuKiSu_${{ env.KSUVER }}_oneplus_ace5_pro.zip *
-          if [ ! -d ~/sukisu_kernel ]; then
-            mkdir -p ~/sukisu_kernel
-          fi
-          mv KPM_ReSuKiSu_${{ env.KSUVER }}_oneplus_ace5_pro.zip ~/sukisu_kernel/KPM_ReSuKiSu_${{ env.KSUVER }}_oneplus_ace5_pro.zip
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
