@@ -31,7 +31,10 @@ jobs:
 
       - name: Setup Kernel Src
         run: |
+          mkdir -p kernel_workspace
+          cd kernel_workspace
           aria2c -x 8 -s 8 -k 20M "https://github.com/EU65/Oplus_Ace5pro_kernel_build/releases/download/v1/ace5p_src.tar.7z"
+          7z x ace5p_src.tar.7z -so | tar -xv
 
           rm -f kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm -f kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
@@ -69,7 +72,7 @@ jobs:
           #endif
           ' "$FILE"
           fi
-          
+
           echo "完成"
 
       - name: Apply HMBird GKI patch
