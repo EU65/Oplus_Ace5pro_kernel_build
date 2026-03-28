@@ -45,8 +45,7 @@ jobs:
           curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash -s ${{ github.event.inputs.SUKISU_BRANCH }}
           cd ./KernelSU
           KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 30725)
-          echo "KSUVER=$KSU_VERSION" >> "$GITHUB_ENV"
-          cat "$GITHUB_ENV"
+          echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
           
       - name: Apply patches
         run: |
@@ -61,6 +60,16 @@ jobs:
           cd ./common
 
           patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch || true
+
+          FILE=./fs/proc/base.c
+          if ! grep -q susfs_def.h "$FILE"; then
+            sed -i '/#include <linux\/cpufreq_times.h>/a\
+          #if defined(CONFIG_KSU_SUSFS_SUS_MAP) && defined(CONFIG_KSU_SUSFS_OPEN_REDIRECT)\
+          #include <linux/susfs_def.h>\
+          #endif
+          ' "$FILE"
+          fi
+          
           echo "完成"
 
       - name: Apply HMBird GKI patch
