@@ -47,7 +47,7 @@ jobs:
           fi
           curl -LSs "https://raw.githubusercontent.com/ReSukiSU/ReSukiSU/main/kernel/setup.sh" | bash -s ${{ github.event.inputs.SUKISU_BRANCH }}
           cd ./KernelSU
-          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 30725)
+          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count main) "+" 30700)
           echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
           
       - name: Apply patches
@@ -216,7 +216,7 @@ jobs:
           cd ./AnyKernel3
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
-          zip -r KPM_SUSFS_ReSuKiSu_${{ env.KSUVER }}_ace5p_${{ env.TIMESTAMP }}.zip *
+          zip -r KPM_SUSFS_ReSuKiSu_${{ env.KSUVER }}_ace5p_$TIMESTAMP.zip *
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v7
