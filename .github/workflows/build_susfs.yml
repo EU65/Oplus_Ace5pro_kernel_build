@@ -33,7 +33,7 @@ jobs:
         run: |
           mkdir -p kernel_workspace
           cd kernel_workspace
-          aria2c -x 8 -s 8 -k 20M "https://github.com/EU65/Oplus_Ace5pro_kernel_build/releases/download/v1/ace5p_src.tar.7z"
+          aria2c -x 8 -s 8 -k 20M "https://github.com/EU65/Oplus_Ace5pro_kernel_build/releases/download/v1/ace5p_src_slim.tar.7z"
           7z x ace5p_src.tar.7z -so | tar -xv
 
           rm -f kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
@@ -194,7 +194,7 @@ jobs:
           export PATH="/usr/lib/ccache:$PATH"
           CLANG_PATH="$(realpath ./kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r510928/bin/clang)"
           cd kernel_workspace/kernel_platform/common
-          make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="$CLANG_PATH" RUSTC=../../prebuilts/rust/linux-x86/1.73.0b/bin/rustc PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld  HOSTLD=ld.lld O=out KCFLAGS+=-O2 gki_defconfig all
+          make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="$CLANG_PATH" PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld  HOSTLD=ld.lld O=out KCFLAGS+=-O2 gki_defconfig all
 
       - name: Apply KPM Patch
         run: |
