@@ -33,7 +33,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.ccache
-          key: ${{ runner.os }}-ccache-ace5p-${{ github.ref_name }}-${{ hashFiles('.github/workflows/build_susfs.yml') }}
+          key: ${{ runner.os }}-ccache-ace5p-${{ github.ref_name }}
           restore-keys: |
             ${{ runner.os }}-ccache-ace5p-${{ github.ref_name }}-
             ${{ runner.os }}-ccache-ace5p-
@@ -43,7 +43,7 @@ jobs:
           mkdir -p kernel_workspace
           cd kernel_workspace
           aria2c -x 8 -s 8 -k 20M "https://github.com/EU65/Oplus_Ace5pro_kernel_build/releases/download/v1/ace5p_src_slim.tar.7z"
-          7z x ace5p_src.tar.7z -so | tar -xv
+          7z x ace5p_src_slim.tar.7z -so | tar -xv
 
           rm -f kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm -f kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
