@@ -30,12 +30,11 @@ jobs:
           sudo apt install -y libssl-dev libelf-dev ccache
 
       - name: Restore ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.ccache
           key: ${{ runner.os }}-ccache-ace5p-${{ github.ref_name }}
           restore-keys: |
-            ${{ runner.os }}-ccache-ace5p-${{ github.ref_name }}-
             ${{ runner.os }}-ccache-ace5p-
 
       - name: Setup Kernel Src

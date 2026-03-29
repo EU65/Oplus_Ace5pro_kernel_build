@@ -27,14 +27,22 @@ jobs:
       - name: Setup packages
         run: |
           sudo apt update
-          sudo apt install -y libssl-dev libelf-dev
+          sudo apt install -y libssl-dev libelf-dev ccache
+
+      - name: Restore ccache
+        uses: actions/cache@v5
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-ccache-ace5p-${{ github.ref_name }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-ace5p-
 
       - name: Setup Kernel Src
         run: |
           mkdir -p kernel_workspace
           cd kernel_workspace
           aria2c -x 8 -s 8 -k 20M "https://github.com/EU65/Oplus_Ace5pro_kernel_build/releases/download/v1/ace5p_src_slim.tar.7z"
-          7z x ace5p_src.tar.7z -so | tar -xv
+          7z x ace5p_src_slim.tar.7z -so | tar -xv
 
           rm -f kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
           rm -f kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
@@ -178,9 +186,14 @@ jobs:
           export KBUILD_BUILD_TIMESTAMP="${{ github.event.inputs.KERNEL_TIME }}"
           export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r510928/bin:$PATH"
           export PATH="/usr/lib/ccache:$PATH"
+          export CCACHE_DIR="$HOME/.ccache"
+          export CCACHE_COMPILERCHECK=content
+          export CCACHE_MAXSIZE=6G
           CLANG_PATH="$(realpath ./kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r510928/bin/clang)"
+          ccache -z
           cd kernel_workspace/kernel_platform/common
-          make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="$CLANG_PATH" PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld  HOSTLD=ld.lld O=out KCFLAGS+=-O2 gki_defconfig all
+          make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache $CLANG_PATH" PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld  HOSTLD=ld.lld O=out KCFLAGS+=-O2 gki_defconfig all
+          ccache -s
 
       - name: Apply KPM Patch
         run: |
