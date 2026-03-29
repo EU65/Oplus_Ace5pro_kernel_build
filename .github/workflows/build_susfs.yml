@@ -27,7 +27,16 @@ jobs:
       - name: Setup packages
         run: |
           sudo apt update
-          sudo apt install -y libssl-dev libelf-dev
+          sudo apt install -y libssl-dev libelf-dev ccache
+
+      - name: Restore ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-ccache-ace5p-${{ github.ref_name }}-${{ hashFiles('.github/workflows/build_susfs.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-ace5p-${{ github.ref_name }}-
+            ${{ runner.os }}-ccache-ace5p-
 
       - name: Setup Kernel Src
         run: |
@@ -192,9 +201,14 @@ jobs:
           export KBUILD_BUILD_TIMESTAMP="${{ github.event.inputs.KERNEL_TIME }}"
           export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r510928/bin:$PATH"
           export PATH="/usr/lib/ccache:$PATH"
+          export CCACHE_DIR="$HOME/.ccache"
+          export CCACHE_COMPILERCHECK=content
+          export CCACHE_MAXSIZE=6G
           CLANG_PATH="$(realpath ./kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r510928/bin/clang)"
+          ccache -z
           cd kernel_workspace/kernel_platform/common
-          make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="$CLANG_PATH" PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld  HOSTLD=ld.lld O=out KCFLAGS+=-O2 gki_defconfig all
+          make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache $CLANG_PATH" PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld  HOSTLD=ld.lld O=out KCFLAGS+=-O2 gki_defconfig all
+          ccache -s
 
       - name: Apply KPM Patch
         run: |
