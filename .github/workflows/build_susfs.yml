@@ -216,12 +216,12 @@ jobs:
           cd ./AnyKernel3
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
-          zip -r KPM_SUSFS_ReSuKiSu_${{ env.KSUVER }}_oneplus_ace5_pro.zip *
+          zip -r KPM_SUSFS_ReSuKiSu_${{ env.KSUVER }}_ace5p_${{ env.TIMESTAMP }}.zip *
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v7
         with:
           name: KPM_SUSFS_ReSuKiSu_${{ env.KSUVER }}_ace5p_${{ env.TIMESTAMP }}.zip
-          path: ./AnyKernel3/KPM_SUSFS_ReSuKiSu_${{ env.KSUVER }}_oneplus_ace5_pro.zip
+          path: ./AnyKernel3/KPM_SUSFS_ReSuKiSu_${{ env.KSUVER }}_ace5p_${{ env.TIMESTAMP }}.zip
           archive: false
 
