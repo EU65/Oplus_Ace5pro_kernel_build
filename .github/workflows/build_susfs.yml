@@ -81,6 +81,12 @@ jobs:
           ' "$FILE"
           fi
 
+          # Droidspaces
+          wget https://github.com/WildKernels/kernel_patches/raw/refs/heads/main/common/droidspaces/fix_sysvipc_kabi_6_7_8.patch
+          wget https://github.com/WildKernels/kernel_patches/raw/refs/heads/main/common/droidspaces/0001-Return-ghost-task-if-task-is-null-and-is-requested-b.patch
+          patch -p1 < fix_sysvipc_kabi_6_7_8.patch || true
+          patch -p1 < 0001-Return-ghost-task-if-task-is-null-and-is-requested-b.patch || true
+          
           echo "完成"
 
       - name: Apply HMBird GKI patch
