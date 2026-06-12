@@ -165,7 +165,6 @@ jobs:
           cd kernel_workspace/kernel_platform
           echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KPM=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_MANUAL_HOOK_AUTO_INPUT_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_MANUAL_HOOK_AUTO_SETUID_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_MANUAL_HOOK_AUTO_INITRC_HOOK=y" >> ./common/arch/arm64/configs/gki_defconfig
@@ -205,7 +204,7 @@ jobs:
           cp -r ./sched_ext/* ./common/kernel/sched
           rm -rf ./sched_ext
 
-      - name: Build Kernel for KPM
+      - name: Build Kernel
         run: |
           export KBUILD_BUILD_TIMESTAMP="${{ github.event.inputs.KERNEL_TIME }}"
           export PATH="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang/host/linux-x86/clang-r510928/bin:$PATH"
@@ -219,15 +218,6 @@ jobs:
           make -j$(nproc --all) LLVM=1 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC="ccache $CLANG_PATH" PAHOLE=../../prebuilts/kernel-build-tools/linux-x86/bin/pahole LD=ld.lld  HOSTLD=ld.lld O=out KCFLAGS+=-O2 gki_defconfig all
           ccache -s
 
-      - name: Apply KPM Patch
-        run: |
-          cd kernel_workspace/kernel_platform/common/out/arch/arm64/boot
-          curl -LO https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/releases/download/0.12.2/patch_linux
-          chmod +x patch_linux
-          ./patch_linux
-          rm -f Image
-          mv oImage Image
-
       - name: Make AnyKernel3
         run: |
           if [ -d "AnyKernel3" ]; then
@@ -239,12 +229,12 @@ jobs:
           cd ./AnyKernel3
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
-          zip -r KPM_ReSuKiSu_${{ env.KSUVER }}_ace5p_$TIMESTAMP.zip *
+          zip -r NOSUSFS_ReSuKiSu_${{ env.KSUVER }}_ace5p_$TIMESTAMP.zip *
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v7
         with:
-          name: KPM_ReSuKiSu_${{ env.KSUVER }}_ace5p_${{ env.TIMESTAMP }}.zip
-          path: ./AnyKernel3/KPM_ReSuKiSu_${{ env.KSUVER }}_ace5p_${{ env.TIMESTAMP }}.zip
+          name: NOSUSFS_ReSuKiSu_${{ env.KSUVER }}_ace5p_${{ env.TIMESTAMP }}.zip
+          path: ./AnyKernel3/NOSUSFS_ReSuKiSu_${{ env.KSUVER }}_ace5p_${{ env.TIMESTAMP }}.zip
           archive: false
 
