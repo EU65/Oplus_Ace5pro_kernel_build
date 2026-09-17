@@ -223,7 +223,7 @@ jobs:
           if [ -d "AnyKernel3" ]; then
             rm -rf AnyKernel3
           fi
-          git clone https://github.com/Kernel-SU/AnyKernel3.git --depth=1      
+          git clone https://github.com/WildKernels/AnyKernel3.git --depth=1      
           rm -rf ./AnyKernel3/.git
           cp kernel_workspace/kernel_platform/common/out/arch/arm64/boot/Image ./AnyKernel3/
           cd ./AnyKernel3
