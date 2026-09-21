@@ -199,6 +199,7 @@ jobs:
           # DroidSpaces
           echo "CONFIG_PID_NS=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_IPC_NS=y" >> ./common/arch/arm64/configs/gki_defconfig
+          echo "CONFIG_USER_NS=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_DEVTMPFS=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_SYSVIPC=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_POSIX_MQUEUE=y" >> ./common/arch/arm64/configs/gki_defconfig          
@@ -237,7 +238,7 @@ jobs:
           if [ -d "AnyKernel3" ]; then
             rm -rf AnyKernel3
           fi
-          git clone https://github.com/Kernel-SU/AnyKernel3.git --depth=1      
+          git clone https://github.com/WildKernels/AnyKernel3.git --depth=1          
           rm -rf ./AnyKernel3/.git
           cp kernel_workspace/kernel_platform/common/out/arch/arm64/boot/Image ./AnyKernel3/
           cd ./AnyKernel3
