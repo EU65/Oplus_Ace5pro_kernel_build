@@ -24,6 +24,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup packages
         run: |
           sudo apt update
@@ -61,7 +64,9 @@ jobs:
       - name: Apply patches
         run: |
           cd kernel_workspace/kernel_platform/common
-          
+
+          patch -p1 < "$GITHUB_WORKSPACE/patches/0001-fix-CVE-2026-43499-rtmutex-use-waiter-task.patch"
+
           wget https://github.com/ReSukiSU/ReSukiSU_Patches/raw/refs/heads/main/scope-minimized/kernel-gki-android15-6.6.patch
 
           patch -p1 < kernel-gki-android15-6.6.patch || true
