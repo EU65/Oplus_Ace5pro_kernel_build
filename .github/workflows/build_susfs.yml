@@ -24,6 +24,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup packages
         run: |
           sudo apt update
@@ -69,6 +72,8 @@ jobs:
           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
           # Apply patches
           cd ./common
+
+          patch -p1 < "$GITHUB_WORKSPACE/patches/0001-fix-CVE-2026-43499-rtmutex-use-waiter-task.patch"
 
           patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch || true
 

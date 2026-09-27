@@ -20,6 +20,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup packages
         run: |
           sudo apt update
@@ -46,6 +49,8 @@ jobs:
       - name: Apply patches
         run: |
           cd kernel_workspace/kernel_platform/common
+
+          patch -p1 < "$GITHUB_WORKSPACE/patches/0001-fix-CVE-2026-43499-rtmutex-use-waiter-task.patch"
           
           # Droidspaces
           wget https://github.com/WildKernels/kernel_patches/raw/refs/heads/main/common/droidspaces/fix_sysvipc_kabi_6_7_8.patch
